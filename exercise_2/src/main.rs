@@ -3,9 +3,24 @@ use std::env;
 use std::fs;
 use std::io;
 use std::iter::FromIterator;
+use std::process;
 
 fn main() {
-    
+    let config = Config::new(env::args()).unwrap_or_else(|err| {
+        eprintln!("Problem parsing arguments: {}", err);
+        process::exit(1);
+    });
+
+    let words = read_file(config).unwrap_or_else(|err| {
+        eprintln!("Problem reading file: {}", err.to_string());
+        process::exit(1);
+    });
+
+    let unique_words = into_hashset(words);
+
+    print_if_exists(&unique_words, vec!["Rust:", "fast,"]);
+    print_if_exists(&unique_words, vec!["speed", "Pick", "hola"]);
+    print_if_exists(&unique_words, vec!["ru1st", "not", "bi"]);
 }
 
 pub struct Config {
@@ -36,7 +51,7 @@ pub fn into_hashset(words: Vec<String>) -> HashSet<String> {
     HashSet::from_iter(words.into_iter()) // With iter doesn't work, why?
 }
 
-pub fn print_if_exists(unique_words: HashSet<String>, words_to_print: Vec<&str>) {
+pub fn print_if_exists(unique_words: &HashSet<String>, words_to_print: Vec<&str>) {
     for word in words_to_print {
         let yes_no = if unique_words.contains(word) { "Yes" } else { "No" };
         println!("{}: {}", word, yes_no);
@@ -51,7 +66,7 @@ pub mod tests {
     fn read_file_ok() {
         let config = Config {filename: String::from("file_example.txt")};
         let words = read_file(config).expect("Something went wrong reading the file");
-        let expected: Vec<String> = vec!("Rust:", "safe,", "fast,", "productive.", "Pick", "three.")
+        let expected: Vec<String> = vec!["Rust:", "safe,", "fast,", "productive.", "Pick", "three."]
             .iter()
             .map(|word| word.to_string())
             .collect();
@@ -67,7 +82,7 @@ pub mod tests {
 
     #[test]
     fn unique_words_ok() {
-        let words: Vec<String> = vec!("Rust", "safe", "safe", "rust")
+        let words: Vec<String> = vec!["Rust", "safe", "safe", "rust"]
             .iter()
             .map(|word| word.to_string())
             .collect();
