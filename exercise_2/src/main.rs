@@ -32,14 +32,20 @@ pub fn read_file(config: Config) -> io::Result<Vec<String>> {
     Ok(words)
 }
 
-pub fn unique_words(words: Vec<String>) -> HashSet<String> {
+pub fn into_hashset(words: Vec<String>) -> HashSet<String> {
     HashSet::from_iter(words.into_iter()) // With iter doesn't work, why?
+}
+
+pub fn print_if_exists(unique_words: HashSet<String>, words_to_print: Vec<&str>) {
+    for word in words_to_print {
+        let yes_no = if unique_words.contains(word) { "Yes" } else { "No" };
+        println!("{}: {}", word, yes_no);
+    }
 }
 
 #[cfg(test)]
 pub mod tests {
     use super::*;
-
 
     #[test]
     fn read_file_ok() {
@@ -62,11 +68,11 @@ pub mod tests {
     #[test]
     fn unique_words_ok() {
         let words: Vec<String> = vec!("Rust", "safe", "safe", "rust")
-            .into_iter()
+            .iter()
             .map(|word| word.to_string())
             .collect();
 
-        let actual = unique_words(words);
+        let actual = into_hashset(words);
         let mut expected: HashSet<String> = HashSet::new();
         expected.insert(String::from("Rust"));
         expected.insert(String::from("safe"));
