@@ -2,5 +2,6 @@
 [workspace]
 
 members = [
-    "exercise_1"
+    "exercise_1",
+    "exercise_2"
 ]
