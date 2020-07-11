@@ -1,3 +1,6 @@
+use std::cmp::Reverse;
+
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub enum Grade {
     Lower,
     Medium,
@@ -31,6 +34,7 @@ impl EducationalStage {
     }
 }
 
+#[derive(Clone)]
 pub struct Student <'a> {
     name: String,
     grade: Grade,
@@ -68,7 +72,7 @@ impl <'a> Class <'a> {
         }            
     }
 
-    pub fn same_institution(self) -> bool {
+    pub fn same_institution(&self) -> bool {
         if self.students.is_empty() {
             return false;
         }
@@ -78,6 +82,12 @@ impl <'a> Class <'a> {
         self.students.iter()
             .map(|student| student.educational_stage)
             .all(|es| es == educational_stage)
+    }
+
+    pub fn into_iter_ordered(&self) -> impl Iterator<Item = Student> {
+        let mut temp_students = self.students.clone();
+        temp_students.sort_by_key(|student| Reverse(student.grade));
+        temp_students.into_iter()
     }
 }
 
@@ -143,5 +153,23 @@ pub mod tests {
         let _ = class.enrroll_student(student_2);
 
         assert!(!class.same_institution());
+    }
+
+    #[test]
+    fn students_ordered() {
+        let highschool= EducationalStage::HighSchool { name: String::from("Escuela 1") };
+        let student_1 = Student::new(String::from("Student 1"), Grade::Lower, &highschool);
+        let student_2 = Student::new(String::from("Student 2"), Grade::Higher, &highschool);
+
+        let mut class = Class::new(String::from("Class 1"), String::from("Professor 1"));
+        let _ = class.enrroll_student(student_1);
+        let _ = class.enrroll_student(student_2);
+
+        let mut iter = class.into_iter_ordered();
+
+        assert_eq!(Grade::Higher, iter.next().unwrap().grade);
+        assert_eq!(Grade::Lower, iter.next().unwrap().grade);
+        assert_eq!(Grade::Lower, class.students[0].grade);
+        assert_eq!(Grade::Higher, class.students[1].grade);
     }
 }
