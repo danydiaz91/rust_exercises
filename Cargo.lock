@@ -8,3 +8,7 @@ version = "0.1.0"
 name = "exercise_2"
 version = "0.1.0"
 
+[[package]]
+name = "exercise_3"
+version = "0.1.0"
+
