@@ -36,9 +36,9 @@ impl EducationalStage {
 
 #[derive(Clone)]
 pub struct Student <'a> {
-    name: String,
-    grade: Grade,
-    educational_stage: &'a EducationalStage
+    pub name: String,
+    pub grade: Grade,
+    pub educational_stage: &'a EducationalStage
 }
 
 impl <'a> Student <'a> {
@@ -48,14 +48,14 @@ impl <'a> Student <'a> {
 }
 
 pub struct Class <'a> {
-    name: String,
-    professor_name: String, 
-    students: Vec<Student<'a>>      
+    pub _name: String,
+    pub _professor_name: String, 
+    pub students: Vec<Student<'a>>      
 }
 
 impl <'a> Class <'a> {
-    pub fn new(name: String, professor_name: String) -> Class<'a> {
-        Class {name, professor_name, students: Vec::new()}
+    pub fn new(_name: String, _professor_name: String) -> Class<'a> {
+        Class {_name, _professor_name, students: Vec::new()}
     }
 
     pub fn enrroll_student(&mut self, student: Student<'a>) -> Result<(), &'static str> {
@@ -160,16 +160,20 @@ pub mod tests {
         let highschool= EducationalStage::HighSchool { name: String::from("Escuela 1") };
         let student_1 = Student::new(String::from("Student 1"), Grade::Lower, &highschool);
         let student_2 = Student::new(String::from("Student 2"), Grade::Higher, &highschool);
+        let student_3 = Student::new(String::from("Student 2"), Grade::Medium, &highschool);
 
         let mut class = Class::new(String::from("Class 1"), String::from("Professor 1"));
         let _ = class.enrroll_student(student_1);
         let _ = class.enrroll_student(student_2);
+        let _ = class.enrroll_student(student_3);
 
         let mut iter = class.into_iter_ordered();
 
         assert_eq!(Grade::Higher, iter.next().unwrap().grade);
+        assert_eq!(Grade::Medium, iter.next().unwrap().grade);
         assert_eq!(Grade::Lower, iter.next().unwrap().grade);
         assert_eq!(Grade::Lower, class.students[0].grade);
         assert_eq!(Grade::Higher, class.students[1].grade);
+        assert_eq!(Grade::Medium, class.students[2].grade);
     }
 }
