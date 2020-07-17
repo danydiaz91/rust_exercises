@@ -50,7 +50,7 @@ impl <'a> Student <'a> {
 pub struct Class <'a> {
     pub _name: String,
     pub _professor_name: String, 
-    pub students: Vec<Student<'a>>      
+    pub students: Vec<&'a  Student<'a>>      
 }
 
 impl <'a> Class <'a> {
@@ -58,7 +58,7 @@ impl <'a> Class <'a> {
         Class {_name, _professor_name, students: Vec::new()}
     }
 
-    pub fn enrroll_student(&mut self, student: Student<'a>) -> Result<(), &'static str> {
+    pub fn enrroll_student(&mut self, student: &'a Student<'a>) -> Result<(), &'static str> {
         let educational_stage = self.students.get(0).map(|s| s.educational_stage);
         
         match educational_stage {
@@ -84,7 +84,7 @@ impl <'a> Class <'a> {
             .all(|es| es == educational_stage)
     }
 
-    pub fn into_iter_ordered(&self) -> impl Iterator<Item = Student> {
+    pub fn into_iter_ordered(&self) -> impl Iterator<Item = &Student> {
         let mut temp_students = self.students.clone();
         temp_students.sort_by_key(|student| Reverse(student.grade));
         temp_students.into_iter()
@@ -104,8 +104,8 @@ pub mod tests {
         let student_2 = Student::new(String::from("Student 2"), Grade::Higher, &highschool_2);
 
         let mut class = Class::new(String::from("Class 1"), String::from("Professor 1"));
-        let result_1 = class.enrroll_student(student_1);
-        let result_2 = class.enrroll_student(student_2);
+        let result_1 = class.enrroll_student(&student_1);
+        let result_2 = class.enrroll_student(&student_2);
 
         assert!(result_1.is_ok());
         assert!(result_2.is_ok());
@@ -120,8 +120,8 @@ pub mod tests {
         let student_2 = Student::new(String::from("Student 2"), Grade::Lower, &college);
 
         let mut class = Class::new(String::from("Class 1"), String::from("Professor 1"));
-        let result_1 = class.enrroll_student(student_1);
-        let result_2 = class.enrroll_student(student_2);
+        let result_1 = class.enrroll_student(&student_1);
+        let result_2 = class.enrroll_student(&student_2);
 
         assert!(result_1.is_ok());
         assert!(result_2.is_err());
@@ -135,8 +135,8 @@ pub mod tests {
         let student_2 = Student::new(String::from("Student 2"), Grade::Higher, &highschool);
 
         let mut class = Class::new(String::from("Class 1"), String::from("Professor 1"));
-        let _ = class.enrroll_student(student_1);
-        let _ = class.enrroll_student(student_2);
+        let _ = class.enrroll_student(&student_1);
+        let _ = class.enrroll_student(&student_2);
 
         assert!(class.same_institution());
     }
@@ -149,8 +149,8 @@ pub mod tests {
         let student_2 = Student::new(String::from("Student 2"), Grade::Higher, &highschool_2);
 
         let mut class = Class::new(String::from("Class 1"), String::from("Professor 1"));
-        let _ = class.enrroll_student(student_1);
-        let _ = class.enrroll_student(student_2);
+        let _ = class.enrroll_student(&student_1);
+        let _ = class.enrroll_student(&student_2);
 
         assert!(!class.same_institution());
     }
@@ -163,9 +163,9 @@ pub mod tests {
         let student_3 = Student::new(String::from("Student 2"), Grade::Medium, &highschool);
 
         let mut class = Class::new(String::from("Class 1"), String::from("Professor 1"));
-        let _ = class.enrroll_student(student_1);
-        let _ = class.enrroll_student(student_2);
-        let _ = class.enrroll_student(student_3);
+        let _ = class.enrroll_student(&student_1);
+        let _ = class.enrroll_student(&student_2);
+        let _ = class.enrroll_student(&student_3);
 
         let mut iter = class.into_iter_ordered();
 
