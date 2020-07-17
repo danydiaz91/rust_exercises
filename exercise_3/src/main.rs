@@ -1,11 +1,12 @@
 use exercise_3::*;
+use std::rc::Rc;
 
 fn main() {
     // HighSchool
-    let highschool = EducationalStage::HighSchool {name: String::from("HighSchool 1")};
-    let studenth1 = Student::new(String::from("Student HS 1"), Grade::Medium, &highschool);
-    let studenth2 = Student::new(String::from("Student HS 2"), Grade::Lower, &highschool);
-    let studenth3 = Student::new(String::from("Student HS 3"), Grade::Higher, &highschool);
+    let highschool = Rc::new(EducationalStage::HighSchool {name: String::from("HighSchool 1")});
+    let studenth1 = Student::new(String::from("Student HS 1"), Grade::Medium, Rc::clone(&highschool));
+    let studenth2 = Student::new(String::from("Student HS 2"), Grade::Lower, Rc::clone(&highschool));
+    let studenth3 = Student::new(String::from("Student HS 3"), Grade::Higher, Rc::clone(&highschool));
     let mut class1 = Class::new(String::from("Class 1"), String::from("Professor 1"));
 
     let _ = class1.enrroll_student(&studenth1);
@@ -13,11 +14,11 @@ fn main() {
     let _ = class1.enrroll_student(&studenth3);
 
     // College
-    let college1 = EducationalStage::College {program: String::from("Program 1")};
-    let college2 = EducationalStage::College {program: String::from("Program 2")};
-    let studentc1 = Student::new(String::from("Student HS 1"), Grade::Lower, &college1);
-    let studentc2 = Student::new(String::from("Student HS 2"), Grade::Medium, &college1);
-    let studentc3 = Student::new(String::from("Student HS 3"), Grade::Higher, &college2);
+    let college1 = Rc::new(EducationalStage::College {program: String::from("Program 1")});
+    let college2 = Rc::new(EducationalStage::College {program: String::from("Program 2")});
+    let studentc1 = Student::new(String::from("Student HS 1"), Grade::Lower, Rc::clone(&college1));
+    let studentc2 = Student::new(String::from("Student HS 2"), Grade::Medium, Rc::clone(&college1));
+    let studentc3 = Student::new(String::from("Student HS 3"), Grade::Higher, college2);
     let mut class2 = Class::new(String::from("Class 2"), String::from("Professor 2"));
 
     let _ = class2.enrroll_student(&studentc1);
